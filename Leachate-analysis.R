@@ -287,7 +287,7 @@ o2_resp.long = tidyr::gather(o2_resp, Ctype, O2.consum, Grasses:Pine, factor_key
 plot(O2.consum ~ Days, data = o2_resp.long[o2_resp.long$Ctype == 'Pine',])
 plot(CO2.accum ~ Time, data = resp2[resp2$Ctype == "Pine",]) #plot the data
 set.seed(123) #set for running the segmented model
-#pine.glm = gls(O2.consum ~ Days, correlation = corAR1(0.8, form = ~1|Days), data = o2_resp.long)
+O2.glm = gls(O2.consum ~ Days * Ctype, correlation = corAR1(0.8, form = ~1|Ctype), data = o2_resp.long)
 pine.glm1 = gls(O2.consum ~ Days, correlation = corAR1(0.8), data = o2_resp.long[which(o2_resp.long$Ctype == "Pine"),])
 pine.glm2 = gls(O2.consum ~ Days, data = o2_resp.long[which(o2_resp.long$Ctype == "Pine"),])
 pine.lm <- lm(O2.consum ~ 0 + Days, data = o2_resp.long[o2_resp.long$Ctype == "Pine",])
