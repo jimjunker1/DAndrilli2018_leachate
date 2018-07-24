@@ -86,7 +86,6 @@ rm(labile_avg)
 doc_gr2 <- doc[which(doc$group == 2),]
 
 doc.change <- doc %>% group_by(Ctype) %>% mutate(dDOC = c(NA, diff(PerDOCrem)))
-#doc.change <- doc.change %>% group_by(Ctype) %>% mutate(U = abs(dDOC/(PerDOCrem*dTime)))
 doc.change <- doc.change %>% group_by(Ctype) %>% mutate(U = abs((log(PerDOCrem)-log(shift(PerDOCrem,n=1,type = "lag")))/dTime))
 doc.change <- doc.change %>% mutate(Ub = U/(Ncells))
 
@@ -95,44 +94,39 @@ doc.change <- doc.change %>% mutate(Ub = U/(Ncells))
 #30-06-2018 NEW ORDER
 # - [doc]
 # - rates
-# - O2 consumption
+# - CO2 respiration
 # - microbial abundances
 resp <- resp[which(resp$Ctype != "Pine2"),]
-
-resp.plot <- ggplot(data=resp, aes(x=Time, y=CO2.accum, group=Ctype, colour=Ctype)) +
+theme_set(theme_bw(16))
+#This is the final plot
+F_resp<- ggplot(data=resp, aes(x=Time, y=CO2.accum, group=Ctype, colour=Ctype)) +
   geom_errorbar(aes(ymin = CO2.accum - stdev.CO2.accum, ymax = CO2.accum + stdev.CO2.accum), width = NA, size = 1.5) +
   geom_line(size=1.5) + 
-  geom_point(aes(shape = Ctype, fill = Ctype), colour = "black", size = 5) +
+  geom_point(aes(shape = Ctype, fill = Ctype), colour = "black", size = 4, stroke = 1.1) +
   geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
   ylab(bquote(~CO[2]~ 'accumulation ('*mu*'L)')) +
-  xlab(expression(paste("Time (days)")));resp.plot
-
-#This is the final plot
-theme_set(theme_bw(20))
-F_resp <- resp.plot + 
+  xlab(expression(paste("Time (days)"))) +
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                                          labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
   scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                      labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
   scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                        labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
-  scale_x_continuous(limits = c(0,44), expand = c(0.008,0)) +
-  scale_y_continuous(limits = c(0,810), expand = c(0.008,0)) +
+  scale_x_continuous(limits = c(0,45), expand = c(0.008,0)) +
+  scale_y_continuous(limits = c(0,810), expand = c(0.04,0)) +
   #annotate("text", x = 2, y = 770, label = "(b)")+
-  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.line = element_line(size = 1), axis.text.x = element_text(), axis.text.y = element_text(),
-        panel.border = element_blank());F_resp
+  theme(legend.position = "none", axis.line.x  = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.line = element_line(size = 1), axis.text.x = element_blank(), axis.text.y = element_text(), legend.title = element_text(vjust = 2),
+        axis.title.x = element_blank(), axis.ticks.x = element_blank(), panel.border = element_blank());F_resp
 
 ##Linearlize and plot the decay over time. 
-doc.lnplot<-ggplot(data=doc, aes(x=Time, y=log(PerDOCrem), group=Ctype, colour=Ctype)) +
-  geom_line(size=1.2) + 
-  geom_point (aes(fill = Ctype, shape = Ctype),size = 5, colour = "black") +
-  geom_vline(xintercept = 7, linetype = "dashed", size = 1.2) +
-  ylab(expression(paste("Ln(DOC remaining [%])"))) +
-  xlab(expression(paste("Time [days]")));doc.lnplot
-
 #this is the final plot for [DOC]
-F.lndoc <- doc.lnplot + 
+F.lndoc<-ggplot(data=doc, aes(x=Time, y=log(PerDOCrem), group=Ctype, colour=Ctype)) +
+  geom_line(size=1.2) + 
+  geom_point (aes(fill = Ctype, shape = Ctype),size = 4, colour = "black", stroke = 1.1) +
+  geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
+  ylab(expression(paste("Ln(DOC remaining [%])"))) +
+  xlab(expression(paste("Time [days]"))) +
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                     labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
   scale_colour_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
@@ -140,9 +134,10 @@ F.lndoc <- doc.lnplot +
   scale_fill_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
   #annotate("text", x = 43, y = 4.55, label = "(c)") +
-  scale_x_continuous(limits = c(0,44), expand = c(0.008,0)) +
+  scale_x_continuous(limits = c(0,45), expand = c(0.008,0)) +
+  scale_y_continuous(limits = c(2.6,4.9))+
   theme(legend.position = 'none', panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      axis.line = element_line(size = 1),
+      axis.line = element_line(size = 1), axis.title.y = element_text(margin = margin(0,7,0,0)),
       axis.title.x = element_blank(), axis.line.x  = element_blank(),axis.text.x = element_blank(),
       axis.ticks.x = element_blank(), panel.border = element_blank());F.lndoc
 
@@ -151,11 +146,9 @@ F.lndoc <- doc.lnplot +
 #DOC uptake 
 Uplot = ggplot(doc.change, aes(y = log(U), x = PerDOCrem, group = Ctype)) + 
   geom_path(aes(colour = Ctype), size = 1.5) +
-  geom_point(aes(shape = Ctype, fill = Ctype), size = 5)  +
+  geom_point(aes(shape = Ctype, fill = Ctype), size = 2.5, stroke = 1)  +
   ylab(bquote('Ln(U [' ~d^-1* '])')) +
-  xlab(expression(paste("DOC remaining (%)")));Uplot
-
-Uplot = Uplot + 
+  xlab(expression(paste("DOC remaining (%)"))) +
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                      labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
   scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
@@ -163,26 +156,23 @@ Uplot = Uplot +
   scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                        labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
   scale_x_continuous(limits = c(0,100), expand = c(0.009,0)) +
-  #scale_y_continuous(limits = c(0,0.75), expand = c(0.009, 0)) +
-  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        plot.background = element_rect( fill = "transparent", colour = NA), axis.title.y = element_text(vjust = 2));Uplot
+  scale_y_continuous(limits = c(-7,0), expand = c(0.009, 0)) +
+  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.title.x = element_text(size = 14),        plot.background = element_rect( fill = "transparent", colour = NA), axis.title.y = element_text(size = 14,vjust = 2));Uplot
 
 #### This sets a custom annotation with the plot that allows to save as an object
 g = ggplotGrob(Uplot)
 
-F1 = F.lndoc + annotation_custom(grob = g, xmin = 20, xmax = 43,
-                                ymin = 3.46, ymax = 4.7);F1
+F1 = F.lndoc + annotation_custom(grob = g, xmin = 18, xmax = 43.8,
+                                ymin = 3.45, ymax = 5);F1
 print(F1)
 
 ## Cells over time multiple looks
-Ncell.plot <- ggplot( data = doc, aes( x = Time, y = log10(Ncells), group = Ctype, colour = Ctype)) +
+Ncell.fin<- ggplot( data = doc, aes( x = Time, y = log10(Ncells), group = Ctype, colour = Ctype)) +
   geom_line (size = 1.5) +
-  geom_point (aes(fill = Ctype, shape = Ctype),size = 5, colour = "black") +
+  geom_point (aes(fill = Ctype, shape = Ctype),size = 4, colour = "black", stroke = 1.1) +
   geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
   ylab(bquote(~Log[10]*'(Cells ['~mL^-1* '])')) +	
-  xlab("Time (days)");Ncell.plot
-
-Ncell.fin = Ncell.plot +
+  xlab("Time (days)")+
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                        labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
   scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
@@ -192,89 +182,43 @@ Ncell.fin = Ncell.plot +
   ylab(bquote(~Log[10]*' (cells [' ~mL^-1* ']) ')) +
   xlab("Time (days)") +
   #annotate("text", x = 43, y = 8.2, label = "(a)") +
-  scale_x_continuous(limits = c(0,44), expand = c(0.008,0)) +
+  scale_x_continuous(limits = c(0,45), expand = c(0.008,0)) +
   scale_y_continuous(limits = c(5,8.3), expand = c(0.008, 0)) +
-  theme(legend.position = c(0.8,0.8), axis.line.x  = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.line = element_line(size = 1), axis.text.x = element_blank(), axis.text.y = element_text(), legend.title = element_text(vjust = 2),
-        axis.title.x = element_blank(), axis.ticks.x = element_blank(), panel.border = element_blank());Ncell.fin
+theme(legend.position = c(0.85,0.8), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      axis.text.x = element_text(), axis.text.y = element_text(), axis.title.y = element_text(margin = margin(0,15,0,0)),
+      panel.border = element_blank(), axis.line = element_line(size = 0.75));Ncell.fin
 
 ##### build final plot using ggarrange######
 
 #theme_set(theme_bw(16))
-ggarrange(Ncell.fin, F1, F_resp, ncol = 1)
+#ggarrange(F1, F_resp, Ncell.fin,ncol = 1)
 
-tiff("Figure1.tiff", res = 600, height = 15, width = 12, units = "in")
-ggarrange(Ncell.fin, F1, F_resp, ncol = 1)
+tiff("Figure1.tiff", res = 600, height = 234, width = 174, units = "mm", compression = "lzw")
+ggarrange(F1, F_resp, Ncell.fin, ncol = 1)
 dev.off()
 ####### Done with Figure 1 #####
 
 #################playing with efficiency of DOC respiration#################
-
-cell.plot1 <- ggplot( data = doc, aes( x = labile, y = doc.cell, group = Time, colour = Time)) +
-  geom_point( size = 5.5) +
-  scale_colour_gradient(low = "red") +
-  xlab(bquote('%'~Lability[T-1]*'')) +
-  ylab(bquote('Change in [DOC]'));cell.plot1
-
-cell.plot2 <- ggplot( data = doc, aes( x = X.labile, y = doc.cell, group = Ncells, colour = Ncells)) +
-  geom_point( size = 5.5) +
-  scale_x_continuous() +
-  scale_colour_gradient(low = "red") +
-  xlab(expression('%'~Lability[T]*'')) +
-  ylab(bquote('Change in [DOC]'));cell.plot2
-
-pdf("cell_plot.pdf")
-grid.arrange(cell.plot1, cell.plot2, ncol = 1, nrow = 2)
-dev.off()
-
-cell.plot3 <- ggplot( data = doc, aes( x = labile, y = doc.cell, group = Ncells, colour = Ncells)) +
-  geom_point( size = 5.5) +
-  scale_colour_gradient(low = "red") +
-  xlab(bquote('%'~Lability[T-1]*'')) +
-  ylab(bquote('Change in [DOC]'));cell.plot3
-
-set.seed(101)
-Feff <- ggplot( data = doc, aes( x = X.labile, y = doc.cell)) +
-  stat_smooth(data = doc_gr2, method = "lm", se = T, alpha = 0.6, size = 1.5, colour = "black", linetype = 1) +
-  geom_point( size = 5.5, aes(shape = Ctype, colour = Ncells)) +
-  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                     labels = c("Grasses", "Leaves", "Pine"), values = c(16,17,15)) +
-  scale_colour_gradient(low = "blue", high = 'red', name = "Cell count") +
-  xlab(expression('%'~Lability[EEMs]*'')) +
-  ylim(c(-10,20)) + coord_cartesian(ylim = c(-0.5,10))+
-  scale_x_reverse() +
-  geom_rug(sides = 't')+
-  #geom_vline(xintercept = 75, linetype = "dashed", size = 1.2) +
-  #geom_text(data = doc, aes(x = X.labile, y = 9.8, label = time.mod), size = 3) +
-  geom_text_repel(data = doc, aes(x = X.labile, y = 10, label = Time), size = 3, ylim = c(NA, 10.2), direction = "y", point.padding = NA, segment.colour = NA, force = 1.2) +
-  ylab(expression(atop("DOM Processing Efficiency", paste("(-"*Delta*"[DOC]/"*10^6~"cells/day)")))) +
-  theme(legend.position = c(0.1, 0.65), panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_text(size = 22), 
-        axis.title.x = element_text(size = 24), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));Feff
-
-tiff("Figure3.tiff", width = 13, height = 10, units = "in", res = 300)
-Feff
-dev.off()
-
 doc.change_gr2 <- doc.change[which(doc.change$group == 2),]
-
+theme_set(theme_bw(14))
 set.seed(101)
 Feff <- ggplot( data = doc.change, aes( x = X.labile, y = Ub*1000000)) +
   stat_smooth(data = doc.change_gr2, method = "lm", se = F, alpha = 0.6, size = 1.5, colour = "black", linetype = 1) +
-  geom_point( size = 5.5, aes(shape = Ctype, fill = Ncells), colour = "black") +
+  geom_point(size = 3.5, aes(shape = Ctype, fill = Ncells), colour = "black", stroke = 1.1) +
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                      labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
   scale_fill_gradient(low = "blue", high = 'red', name = "Cell count") +
   xlab(expression('%'~Lability[EEMs]*'')) +
   ylim(c(-10,20)) + coord_cartesian(ylim = c(0,0.125))+
+  #ylab(expression(atop("DOM Processing Efficiency", paste("(U/"*10^6~"cells)")))) +
+  ylab(expression("DOM processing efficiency (U/"*10^6~"cells)"))+
   scale_x_reverse() +
   geom_rug(sides = 't')+
-  #geom_vline(xintercept = 75, linetype = "dashed", size = 1.2) +
-  #geom_text(data = doc, aes(x = X.labile, y = 9.8, label = time.mod), size = 3) +
   geom_text_repel(data = doc, aes(x = X.labile, y = 0.125, label = Time), size = 3, ylim = c(NA, 0.128), direction = "y", point.padding = NA, segment.colour = NA, force = 1.2) +
-  ylab(expression(atop("DOM Processing Efficiency", paste("(U/"*10^6~"cells)")))) +
-  theme(legend.position = c(0.1, 0.65), panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_text(size = 22), 
-        axis.title.x = element_text(size = 24), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));Feff
-tiff("Figure3.tiff", width = 13, height = 10, units = "in", res = 300)
+  theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 12), axis.text.x = element_text(size = 12), 
+        axis.title.x = element_text(), axis.title.y = element_text(margin = margin(0,0,0,0)),
+        legend.title = element_text(size = 11), legend.text = element_text(size = 10));Feff
+tiff("Figure3.tiff", width = 129, height = 129, units = "mm", res = 600, compression = "lzw")
 Feff
 dev.off()
 #######  End cell DOC efficiency #####
@@ -1100,7 +1044,51 @@ dev.off()
 
 
 #################  Old code #####################
+#old cell respiration efficiency plot code
+cell.plot1 <- ggplot( data = doc, aes( x = labile, y = doc.cell, group = Time, colour = Time)) +
+  geom_point( size = 5.5) +
+  scale_colour_gradient(low = "red") +
+  xlab(bquote('%'~Lability[T-1]*'')) +
+  ylab(bquote('Change in [DOC]'));cell.plot1
 
+cell.plot2 <- ggplot( data = doc, aes( x = X.labile, y = doc.cell, group = Ncells, colour = Ncells)) +
+  geom_point( size = 5.5) +
+  scale_x_continuous() +
+  scale_colour_gradient(low = "red") +
+  xlab(expression('%'~Lability[T]*'')) +
+  ylab(bquote('Change in [DOC]'));cell.plot2
+
+pdf("cell_plot.pdf")
+grid.arrange(cell.plot1, cell.plot2, ncol = 1, nrow = 2)
+dev.off()
+
+cell.plot3 <- ggplot( data = doc, aes( x = labile, y = doc.cell, group = Ncells, colour = Ncells)) +
+  geom_point( size = 5.5) +
+  scale_colour_gradient(low = "red") +
+  xlab(bquote('%'~Lability[T-1]*'')) +
+  ylab(bquote('Change in [DOC]'));cell.plot3
+
+set.seed(101)
+Feff <- ggplot( data = doc, aes( x = X.labile, y = doc.cell)) +
+  stat_smooth(data = doc_gr2, method = "lm", se = T, alpha = 0.6, size = 1.5, colour = "black", linetype = 1) +
+  geom_point( size = 5.5, aes(shape = Ctype, colour = Ncells)) +
+  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                     labels = c("Grasses", "Leaves", "Pine"), values = c(16,17,15)) +
+  scale_colour_gradient(low = "blue", high = 'red', name = "Cell count") +
+  xlab(expression('%'~Lability[EEMs]*'')) +
+  ylim(c(-10,20)) + coord_cartesian(ylim = c(-0.5,10))+
+  scale_x_reverse() +
+  geom_rug(sides = 't')+
+  #geom_vline(xintercept = 75, linetype = "dashed", size = 1.2) +
+  #geom_text(data = doc, aes(x = X.labile, y = 9.8, label = time.mod), size = 3) +
+  geom_text_repel(data = doc, aes(x = X.labile, y = 10, label = Time), size = 3, ylim = c(NA, 10.2), direction = "y", point.padding = NA, segment.colour = NA, force = 1.2) +
+  ylab(expression(atop("DOM Processing Efficiency", paste("(-"*Delta*"[DOC]/"*10^6~"cells/day)")))) +
+  theme(legend.position = c(0.1, 0.65), panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_text(size = 22), 
+        axis.title.x = element_text(size = 24), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));Feff
+
+tiff("Figure3.tiff", width = 13, height = 10, units = "in", res = 300)
+Feff
+dev.off()
 ###############Breakpoint linear regression code#################
 full <- function(mainplot = NULL, subplot = NULL, vp = NULL) {
   print(mainplot)
