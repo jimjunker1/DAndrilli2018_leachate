@@ -26,12 +26,9 @@ library(quantmod)
 library(nlme)
 library(lme4)
 
-#set plotting themes#
-
-theme_set(theme_bw(20))
+#set plotting themes and color palette#
 cbbPalette <- c("#006600", "#FF9900", "#990099", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 #####
-
 ##load in data sheet for DOC timeseries and cumulative measures ####
 
 doc<-read.csv(file="./data-files/Leachate_TimeSeries1.csv",T)
@@ -59,7 +56,6 @@ doc[P_fix, 'phosphate'] = 0.05
 doc$NP = (doc$N/doc$phosphate)*(30.974/14.007)
 doc$DOC.DIN = (doc$DOC/doc$N) *(14.007/12.011)
 doc$DOC.SRP = (doc$DOC/doc$phosphate) *(30.974/12.011)
-doc
 
 #NP_fix = which(doc$NP) == T) 
 #doc[NP_fix, 'NP'] = -Inf
@@ -91,7 +87,7 @@ doc.change <- doc.change %>% mutate(Ub = U/(Ncells))
 
 #Figure 1 for publication Respiration and cell count latticed, with [DOC] inset #######
 ###Analyses on respiration data##
-#30-06-2018 NEW ORDER
+#2018-07-24 NEW ORDER and new size
 # - [doc]
 # - rates
 # - CO2 respiration
@@ -190,8 +186,6 @@ theme(legend.position = c(0.85,0.8), panel.grid.major = element_blank(), panel.g
       panel.border = element_blank(), axis.line = element_line(size = 0.75));Ncell.fin
 
 ##### build final plot using ggarrange######
-
-#theme_set(theme_bw(16))
 #ggarrange(F1, F_resp, Ncell.fin,ncol = 1)
 
 tiff("Figure1.tiff", res = 600, height = 234, width = 174, units = "mm", compression = "lzw")
@@ -200,6 +194,7 @@ dev.off()
 ####### Done with Figure 1 #####
 
 #################playing with efficiency of DOC respiration#################
+#2018-07-24 New size
 doc.change_gr2 <- doc.change[which(doc.change$group == 2),]
 theme_set(theme_bw(14))
 set.seed(101)
@@ -215,7 +210,7 @@ Feff <- ggplot( data = doc.change, aes( x = X.labile, y = Ub*1000000)) +
   ylab(expression("DOM processing efficiency (U/"*10^6~"cells)"))+
   scale_x_reverse() +
   geom_rug(sides = 't')+
-  geom_text_repel(data = doc, aes(x = X.labile, y = 0.125, label = Time), size = 2.2, ylim = c(NA, 0.128), direction = "y", point.padding = NA, segment.colour = NA, force = 1.4) +
+  geom_text_repel(data = doc, aes(x = X.labile, y = 0.125, label = Time), size = 2.2, ylim = c(0.115, 0.128), direction = "y", point.padding = NA, segment.colour = "grey", force = 1.4) +
   theme(legend.position = c(0.15,0.53),panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 12), axis.text.x = element_text(size = 12), 
         axis.title.x = element_text(), axis.title.y = element_text(margin = margin(0,0,0,0)),
         legend.title = element_text(size = 11), legend.text = element_text(size = 10),
