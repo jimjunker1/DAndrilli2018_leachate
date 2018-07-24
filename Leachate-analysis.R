@@ -157,7 +157,8 @@ Uplot = ggplot(doc.change, aes(y = log(U), x = PerDOCrem, group = Ctype)) +
                        labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
   scale_x_continuous(limits = c(0,100), expand = c(0.009,0)) +
   scale_y_continuous(limits = c(-7,0), expand = c(0.009, 0)) +
-  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.title.x = element_text(size = 14),        plot.background = element_rect( fill = "transparent", colour = NA), axis.title.y = element_text(size = 14,vjust = 2));Uplot
+  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.title.x = element_text(size = 14),        
+        plot.background = element_rect( fill = "transparent", colour = NA), axis.title.y = element_text(size = 14,vjust = 2));Uplot
 
 #### This sets a custom annotation with the plot that allows to save as an object
 g = ggplotGrob(Uplot)
@@ -214,10 +215,11 @@ Feff <- ggplot( data = doc.change, aes( x = X.labile, y = Ub*1000000)) +
   ylab(expression("DOM processing efficiency (U/"*10^6~"cells)"))+
   scale_x_reverse() +
   geom_rug(sides = 't')+
-  geom_text_repel(data = doc, aes(x = X.labile, y = 0.125, label = Time), size = 3, ylim = c(NA, 0.128), direction = "y", point.padding = NA, segment.colour = NA, force = 1.2) +
-  theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 12), axis.text.x = element_text(size = 12), 
+  geom_text_repel(data = doc, aes(x = X.labile, y = 0.125, label = Time), size = 2.2, ylim = c(NA, 0.128), direction = "y", point.padding = NA, segment.colour = NA, force = 1.4) +
+  theme(legend.position = c(0.15,0.53),panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 12), axis.text.x = element_text(size = 12), 
         axis.title.x = element_text(), axis.title.y = element_text(margin = margin(0,0,0,0)),
-        legend.title = element_text(size = 11), legend.text = element_text(size = 10));Feff
+        legend.title = element_text(size = 11), legend.text = element_text(size = 10),
+        legend.background = element_rect( fill = "transparent", colour = NA));Feff
 tiff("Figure3.tiff", width = 129, height = 129, units = "mm", res = 600, compression = "lzw")
 Feff
 dev.off()
