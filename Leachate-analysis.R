@@ -1244,3 +1244,22 @@ o2_resp %>%
 
 ggplot(resp_o2.df, aes(x = Days, y = O_C, color = Ctype)) + geom_point(size = 2) + geom_path(size = 1.2) +
   ylab("O2 consumption (uL)/CO2 accum. (uL)")+theme(legend.position = c(0.8,0.2))
+
+
+o2_resp %>%
+  gather(Ctype, O2_consump, Grasses:Pine, factor_key = T) %>%
+  group_by(Ctype) %>%
+  mutate(dO2 = c(NA, diff(O2_consump))) -> o2.change
+
+co2.change <- resp2 %>% group_by(Ctype,Rep) %>% mutate(dCO2 = c(NA, diff(CO2.accum)))
+co2.change %>%
+  group_by(Ctype, Time) %>%
+  summarize(dCO2 = mean(dCO2, na.rm = T)) -> co2.change
+colnames(co2.change)[2] = "Days"
+co2.change %>%
+  left_join(o2.change, by = c("Ctype","Days")) %>%
+  mutate(O_C = abs(dO2)/abs(dCO2)) -> O_C.change
+
+ggplot(O_C.change, aes(x = Days, y = log(O_C), color = Ctype)) + geom_point(size = 2) + geom_path(size = 1.2) +
+theme(legend.position = c(0.8,0.2))
+
