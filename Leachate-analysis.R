@@ -226,6 +226,7 @@ o2_resp.long = tidyr::gather(o2_resp, Ctype, O2.consum, Grasses:Pine, factor_key
 #Build models for each Carbon type
 plot(O2.consum ~ Days, data = o2_resp.long[o2_resp.long$Ctype == 'Pine',])
 plot(CO2.accum ~ Time, data = resp2[resp2$Ctype == "Pine",]) #plot the data
+
 set.seed(123) #set for running the segmented model
 O2.glm = gls(O2.consum ~ Days * Ctype, correlation = corAR1(0.8, form = ~1|Ctype), data = o2_resp.long)
 pine.glm1 = gls(O2.consum ~ Days, correlation = corAR1(0.8), data = o2_resp.long[which(o2_resp.long$Ctype == "Pine"),])
@@ -329,7 +330,7 @@ plot(pine.lm);summary(pine.lm)  #plotting the linear model. Look @ standardized 
 seg.pine1 = segmented(pine.lm, seg.Z = ~Time, psi = 1)
 summary(seg.pine1)
 seg.pine1$psi[[2]]
-seg.pine2 = segmented(pine.lm, seg.Z = ~Time, psi = c(2.5,15))
+seg.pine2 = segmented(pine.lm, seg.Z = ~Time, psi = c(2.5))
 summary(seg.pine2)
 seg.pine5 = segmented(pine.lm, seg.Z = ~Time, psi = 5)
 summary(seg.pine5)
@@ -1195,7 +1196,7 @@ cbind_gtable_max <- function(...){
   Reduce(bind2, gtl)
 }
 #########
-###Fucking with O2-CO2 stoichiometry###
+###Fucking around with O2-CO2 stoichiometry###
 colnames(resp)[2] = "Days"
 o2_resp %>%
   gather(Ctype, O2_consump, Grasses:Pine, factor_key = T) %>%
