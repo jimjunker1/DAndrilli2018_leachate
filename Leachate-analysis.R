@@ -7,9 +7,9 @@
 
 #### Load in packages ####
 #run everytime
-library(reshape2)
 library(plyr)
-library(ggplot2)
+library(tidyverse)
+library(reshape2)
 library(segmented)
 library(Rcpp)
 library(gridExtra)
@@ -20,7 +20,6 @@ library(PerformanceAnalytics)
 library(gtable)
 library(ggrepel)
 library(grid)
-library(dplyr)
 library(egg)
 library(quantmod)
 library(nlme)
@@ -1196,5 +1195,14 @@ cbind_gtable_max <- function(...){
   Reduce(bind2, gtl)
 }
 #########
+###Fucking with O2-CO2 stoichiometry###
+colnames(resp)[2] = "Days"
+o2_resp %>%
+  gather(Ctype, O2_consump, Grasses:Pine, factor_key = T) %>%
+  group_by(Ctype) %>%
+  left_join(resp) %>%
+  mutate(O_C = abs(O2_consump)/abs(CO2.accum)*(48/36)) -> resp_o2.df
 
 
+ggplot(resp_o2.df, aes(x = Days, y = O_C, color = Ctype)) + geom_point(size = 2) + geom_path(size = 1.2) +
+  ylab("O2 consumption (uL)/CO2 accum. (uL)")+theme(legend.position = c(0.8,0.2))
