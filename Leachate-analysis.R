@@ -94,11 +94,12 @@ doc.change <- doc.change %>% mutate(Ub = U/(Ncells))
 resp <- resp[which(resp$Ctype != "Pine2"),]
 theme_set(theme_bw(16))
 #This is the final plot
-F_resp<- ggplot(data=resp, aes(x=Time, y=CO2.accum, group=Ctype, colour=Ctype)) +
+F_resp<- ggplot(data=resp, aes(x=Days, y=CO2.accum, group=Ctype, colour=Ctype)) +
+  geom_rect(xmin = 6.31, xmax = 7.66, ymin = -50, ymax = 850, fill = "grey",alpha = 0.9, colour = NA) +
+  geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
   geom_errorbar(aes(ymin = CO2.accum - stdev.CO2.accum, ymax = CO2.accum + stdev.CO2.accum), width = NA, size = 1.5) +
   geom_line(size=1.5) + 
   geom_point(aes(shape = Ctype, fill = Ctype), colour = "black", size = 4, stroke = 1.1) +
-  geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
   ylab(bquote(~CO[2]~ 'accumulation ('*mu*'L)')) +
   xlab(expression(paste("Time (days)"))) +
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
@@ -108,7 +109,7 @@ F_resp<- ggplot(data=resp, aes(x=Time, y=CO2.accum, group=Ctype, colour=Ctype)) 
   scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                        labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
   scale_x_continuous(limits = c(0,45), expand = c(0.008,0)) +
-  scale_y_continuous(limits = c(0,810), expand = c(0.04,0)) +
+  scale_y_continuous(limits = c(-5,810), expand = c(0.04,0)) + coord_cartesian(ylim = c(0,810))+
   #annotate("text", x = 2, y = 770, label = "(b)")+
   theme(legend.position = "none", axis.line.x  = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.line = element_line(size = 1), axis.text.x = element_blank(), axis.text.y = element_text(), legend.title = element_text(vjust = 2),
@@ -117,9 +118,10 @@ F_resp<- ggplot(data=resp, aes(x=Time, y=CO2.accum, group=Ctype, colour=Ctype)) 
 ##Linearlize and plot the decay over time. 
 #this is the final plot for [DOC]
 F.lndoc<-ggplot(data=doc, aes(x=Time, y=log(PerDOCrem), group=Ctype, colour=Ctype)) +
+  geom_rect(xmin = 6.31, xmax = 7.66, ymin = -50, ymax = 850, fill = "grey",alpha = 0.9, colour = NA) +
+  geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
   geom_line(size=1.2) + 
   geom_point (aes(fill = Ctype, shape = Ctype),size = 4, colour = "black", stroke = 1.1) +
-  geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
   ylab(expression(paste("Ln(DOC remaining [%])"))) +
   xlab(expression(paste("Time [days]"))) +
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
@@ -128,7 +130,7 @@ F.lndoc<-ggplot(data=doc, aes(x=Time, y=log(PerDOCrem), group=Ctype, colour=Ctyp
                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
   scale_fill_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
-  #annotate("text", x = 43, y = 4.55, label = "(c)") +
+  #annotate("text", x = 2, y = 4.8, label = "(a)") +
   scale_x_continuous(limits = c(0,45), expand = c(0.008,0)) +
   scale_y_continuous(limits = c(2.6,4.9))+
   theme(legend.position = 'none', panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -151,7 +153,7 @@ Uplot = ggplot(doc.change, aes(y = log(U), x = PerDOCrem, group = Ctype)) +
   scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
                        labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
   scale_x_continuous(limits = c(0,100), expand = c(0.009,0)) +
-  scale_y_continuous(limits = c(-7,0), expand = c(0.009, 0)) +
+  scale_y_continuous(limits = c(-7,-0.01), expand = c(0.009, 0)) +
   theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.title.x = element_text(size = 14),        
         plot.background = element_rect( fill = "transparent", colour = NA), axis.title.y = element_text(size = 14,vjust = 2));Uplot
 
@@ -164,9 +166,10 @@ print(F1)
 
 ## Cells over time multiple looks
 Ncell.fin<- ggplot( data = doc, aes( x = Time, y = log10(Ncells), group = Ctype, colour = Ctype)) +
+  geom_rect(xmin = 6.31, xmax = 7.66, ymin = -50, ymax = 850, fill = "grey",alpha = 0.9, colour = NA) +
+  geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
   geom_line (size = 1.5) +
   geom_point (aes(fill = Ctype, shape = Ctype),size = 4, colour = "black", stroke = 1.1) +
-  geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
   ylab(bquote(~Log[10]*'(Cells ['~mL^-1* '])')) +	
   xlab("Time (days)")+
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
@@ -177,7 +180,7 @@ Ncell.fin<- ggplot( data = doc, aes( x = Time, y = log10(Ncells), group = Ctype,
                        labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
   ylab(bquote(~Log[10]*' (cells [' ~mL^-1* ']) ')) +
   xlab("Time (days)") +
-  #annotate("text", x = 43, y = 8.2, label = "(a)") +
+  #annotate("text", x = 2, y = 5.2, label = "(c)") +
   scale_x_continuous(limits = c(0,45), expand = c(0.008,0)) +
   scale_y_continuous(limits = c(5,8.3), expand = c(0.008, 0)) +
 theme(legend.position = c(0.85,0.8), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -197,7 +200,7 @@ dev.off()
 doc.change_gr2 <- doc.change[which(doc.change$group == 2),]
 theme_set(theme_bw(14))
 set.seed(101)
-Feff <- ggplot( data = doc.change, aes( x = X.labile, y = Ub*1000000)) +
+Feff <- ggplot( data = doc.change, aes( x = X.labile, y = Ub*1e06)) +
   stat_smooth(data = doc.change_gr2, method = "lm", se = F, alpha = 0.6, size = 1.5, colour = "black", linetype = 1) +
   geom_point(size = 3.5, aes(shape = Ctype, fill = Ncells), colour = "black", stroke = 1.1) +
   scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
@@ -217,8 +220,177 @@ Feff <- ggplot( data = doc.change, aes( x = X.labile, y = Ub*1000000)) +
 tiff("Figure3.tiff", width = 129, height = 129, units = "mm", res = 600, compression = "lzw")
 Feff
 dev.off()
+cor.test(doc.change_gr2$X.labile, doc.change_gr2$Ub*1e06)
 #######  End cell DOC efficiency #####
 
+###### Compare breakpoint in [DOC] #####
+plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Pine",]) #plot the data
+set.seed(123) #set for running the segmented model 
+pine.lm <- lm(log(PerDOCrem ) ~  0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Pine",])
+#pine.lm <- lm(log(PerDOCrem ) ~ Time,data = doc[doc$Ctype == "Pine",]);summary(pine.lm)
+plot(pine.lm);summary(pine.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
+seg.pine1 = segmented(pine.lm, seg.Z = ~Time, psi = 1)
+summary(seg.pine1)
+seg.pine1$psi[[2]]
+######  Quick test to check sensitivity of breakpoint to starting value #####
+seg.pine3 = segmented(pine.lm, seg.Z = ~Time, psi = 3)
+summary(seg.pine3)
+seg.pine5 = segmented(pine.lm, seg.Z = ~Time, psi = 5)
+summary(seg.pine5)
+seg.pine15 = segmented(pine.lm, seg.Z = ~Time, psi = 15)
+summary(seg.pine15)
+seg.pine40 = segmented(pine.lm, seg.Z = ~Time, psi = 40)
+summary(seg.pine40)
+
+start = c(1,3,5,15,40)
+est = c(seg.pine1$psi[[2]], seg.pine3$psi[[2]], seg.pine5$psi[[2]], seg.pine15$psi[[2]],
+        seg.pine40$psi[[2]])
+est.se = c(seg.pine1$psi[[3]], seg.pine3$psi[[3]], seg.pine5$psi[[3]], seg.pine15$psi[[3]],
+           seg.pine40$psi[[3]])
+df = data.frame(start, est, est.se)
+limits = c(ymin = est - est.se, ymax = est + est.se)
+ggplot(df, aes(x = start, y = est)) + geom_errorbar(aes(ymin = est - est.se, ymax = est + est.se), width = 0, size = 1) +geom_point(size = 3) +
+  ylim(limits =c(0,20))
+##### End test ######
+slope(seg.pine1)
+plot(seg.pine1)
+points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Pine",])
+#Running with  grasses
+plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Grasses",]) #plot the data
+set.seed(123) #set for running the segmented model 
+grass.lm <- lm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)), data = doc[doc$Ctype == "Grasses",]) #the Linear model to use for breakpoint estimation
+plot(grass.lm);summary(grass.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
+seg.grass1 = segmented(grass.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
+summary(seg.grass1)
+slope(seg.grass1)
+
+plot(seg.grass1)
+points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Grasses",])
+AIC(grass.lm, seg.grass1)
+##Running the leaves
+plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Leaves",]) #plot the data
+set.seed(123) #set for running the segmented model 
+leaves.lm <- lm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Leaves",]) #the Linear model to use for breakpoint estimation
+plot(leaves.lm);summary(leaves.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
+seg.leaves1 = segmented(leaves.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
+summary(seg.leaves1)
+
+plot(seg.leaves1)
+points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Leaves",])
+AIC(leaves.lm, seg.leaves1)
+
+#### DOC psi est ####
+seg.pine1$psi[2]
+seg.grass1$psi[2]
+seg.leaves1$psi[2]
+
+mean(c(seg.pine1$psi[2],seg.grass1$psi[2],seg.leaves1$psi[2]))
+##### 
+#### DOC k coeffs ####
+seg.pine1$coefficients[1]
+100-exp(4.60517+seg.pine1$coefficients[1]*seg.pine1$psi[2])
+seg.grass1$coefficients[1]
+100-exp(4.60517+seg.grass1$coefficients[1]*seg.grass1$psi[2])
+seg.leaves1$coefficients[1] 
+100-exp(4.60517+seg.leaves1$coefficients[1]*seg.leaves1$psi[2])
+
+#### look at  
+short.DOC<-ggplot(data=doc, aes(x=Time, y=log(PerDOCrem), group=Ctype, colour=Ctype)) +
+  geom_line(size=1.2) + 
+  geom_point (aes(fill = Ctype, shape = Ctype),size = 4, colour = "black", stroke = 1.1) +
+  geom_vline(xintercept = 7, linetype = "dashed", size = 1.5) +
+  ylab(expression(paste("Ln(DOC remaining [%])"))) +
+  xlab(expression(paste("Time [days]"))) +
+  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                     labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
+  scale_colour_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                      labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
+  scale_fill_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                    labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
+  #annotate("text", x = 43, y = 4.55, label = "(c)") +
+  scale_x_continuous(limits = c(0,45), expand = c(0.008,0)) + coord_cartesian(xlim = c(0,8))+
+  scale_y_continuous(limits = c(2.6,4.9))+
+  theme(legend.position = 'none', panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.line = element_line(size = 1), axis.title.y = element_text(margin = margin(0,7,0,0)),
+        axis.title.x = element_blank(), axis.line.x  = element_blank(),axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(), panel.border = element_blank());short.DOC
+
+###### End [DOC] Breakpoint comparisons #####
+
+#respiration estimates at short term##
+f <- function(u) which.min(abs(as.numeric(resp2$Time) - as.numeric(u)))
+resp2 %>%
+  group_by(Ctype) %>%
+  spread(key = Rep, CO2.accum) -> resp.w
+
+resp.pine = resp.w[which(resp.w$Ctype == "Pine"),]
+resp.grass = resp.w[which(resp.w$Ctype == "Grasses"),]
+resp.leaves = resp.w[which(resp.w$Ctype == "Leaves"),]
+
+resp.pine[f(seg.pine1$psi[2]),];mean(c(467,467,476))
+resp.grass[f(seg.grass1$psi[2]),];mean(c(399,359,399))
+resp.leaves[f(seg.leaves1$psi[2]),];mean(c(507,556,502))
+
+### Dissolved stoic figure for supplemental ####
+CV = function(x){sd(x, na.rm = T)/mean(x, na.rm = T)}
+NP_doc = doc[apply(doc[c('Time', 'NP')], 1, function(x) all(is.finite(x))),c('Time', 'Ctype','NP')]
+aggregate(NP~Ctype, data = doc, FUN = CV)
+
+NP.plot = ggplot(data = doc, aes(x = Time, y = NP, group = Ctype, colour = Ctype)) +
+  geom_path(size = 1.2) +geom_point(aes(shape = Ctype, fill = Ctype), size = 6, colour = "black") + 
+  ylab("DIN:SRP (molar)") + xlab("Time (days)") + scale_x_continuous(limits = c(0,44), expand = c(0.01,0)) +
+  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                     labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
+  scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
+  scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                       labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
+  theme(legend.position = c(0.85, 0.85), panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_text(size = 22), 
+        axis.title.x = element_text(size = 24), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));NP.plot
+
+tiff("NP_plot.tiff", res = 600, height = 8, width = 8, units = "in")
+NP.plot
+dev.off()
+N_doc = doc[apply(doc[c('Time', 'DOC.DIN')], 1, function(x) all(is.finite(x))), c('Time', 'Ctype', 'DOC.DIN')]
+aggregate(DOC.DIN~Ctype, data = doc, FUN = CV)
+
+DOC_N.plot = ggplot(doc, aes(x = Time, y = DOC.DIN, group = Ctype, colour = Ctype)) +
+  geom_point(aes(shape = Ctype, fill = Ctype), size = 6, colour = "black") + geom_path(size = 1.2) +
+  ylab("DOC:DIN (molar)") + xlab("Time (days)") +
+  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                     labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
+  scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
+  scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                       labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
+  theme(legend.position = c(0.9, 0.75), panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_blank(), 
+        axis.title.x = element_blank(), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));DOC_N.plot
+
+P_doc = doc[apply(doc[c('Time', 'DOC.SRP')], 1, function(x) all(is.finite(x))), c('Time', 'Ctype', 'DOC.SRP')]
+aggregate(DOC.SRP~Ctype, data = doc, FUN = CV)
+
+DOC_P.plot = ggplot(doc, aes(x = Time, y = DOC.SRP, group = Ctype, colour = Ctype)) +
+  geom_point(aes(shape = Ctype, fill = Ctype), size = 6, colour = "black") + geom_path(size = 1.2) +
+  ylab("DOC:SRP (molar)") + xlab("Time (days)") +
+  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                     labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
+  scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
+  scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
+                       labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
+  theme(legend.position = 'none', panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_blank(), 
+        axis.title.x = element_blank(), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));DOC_P.plot
+
+tiff("Dissolved_stoic.tiff", res = 600, height = 15, width = 10, unit = "in")
+ggarrange(DOC_N.plot, DOC_P.plot, NP.plot, ncol = 1)
+dev.off()
+
+ggarrange(DOC_N.plot, DOC_P.plot, NP.plot, ncol = 1)
+grid.arrange(DOC_N.plot, DOC_P.plot, NP.plot, ncol = 1)
+
+###### End Stoic supplemental figure #####
+
+####### Exploratory analysis section #######
 ###loading in full respiration data #####
 str(o2_resp)
 #source("./segmented.lme/source-segmented.lme.r")
@@ -226,7 +398,6 @@ o2_resp.long = tidyr::gather(o2_resp, Ctype, O2.consum, Grasses:Pine, factor_key
 #Build models for each Carbon type
 plot(O2.consum ~ Days, data = o2_resp.long[o2_resp.long$Ctype == 'Pine',])
 plot(CO2.accum ~ Time, data = resp2[resp2$Ctype == "Pine",]) #plot the data
-
 set.seed(123) #set for running the segmented model
 O2.glm = gls(O2.consum ~ Days * Ctype, correlation = corAR1(0.8, form = ~1|Ctype), data = o2_resp.long)
 pine.glm1 = gls(O2.consum ~ Days, correlation = corAR1(0.8), data = o2_resp.long[which(o2_resp.long$Ctype == "Pine"),])
@@ -321,139 +492,6 @@ exp(1)^seg.grass1$coefficients[1] -1
 exp(1)^seg.leaves1$coefficients[1] -1
 
 ###### End segmented respiration model #####
-###### Compare breakpoint in [DOC] #####
-plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Pine",]) #plot the data
-set.seed(123) #set for running the segmented model 
-pine.lm <- lm(log(PerDOCrem ) ~  0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Pine",])
-plot(pine.lm);summary(pine.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
-######  Quick test to check sensitivity of breakpoint to starting value #####
-seg.pine1 = segmented(pine.lm, seg.Z = ~Time, psi = 1)
-summary(seg.pine1)
-seg.pine1$psi[[2]]
-seg.pine2 = segmented(pine.lm, seg.Z = ~Time, psi = c(2.5))
-summary(seg.pine2)
-seg.pine5 = segmented(pine.lm, seg.Z = ~Time, psi = 5)
-summary(seg.pine5)
-seg.pine10 = segmented(pine.lm, seg.Z = ~Time, psi = 10)
-summary(seg.pine10)
-seg.pine40 = segmented(pine.lm, seg.Z = ~Time, psi = 40)
-summary(seg.pine40)
-
-start = c(1,2.5,5,10,40)
-est = c(seg.pine1$psi[[2]], seg.pine2$psi[[2]], seg.pine5$psi[[2]], seg.pine10$psi[[2]],
-        seg.pine40$psi[[2]])
-est.se = c(seg.pine1$psi[[3]], seg.pine2$psi[[3]], seg.pine5$psi[[3]], seg.pine10$psi[[3]],
-           seg.pine40$psi[[3]])
-df = data.frame(start, est, est.se)
-limits = c(ymin = est - est.se, ymax = est + est.se)
-ggplot(df, aes(x = start, y = est)) + geom_errorbar(aes(ymin = est - est.se, ymax = est + est.se)) +geom_point(size = 1)
-##### End test ######
-slope(seg.pine1)
-plot(seg.pine1)
-points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Pine",])
-pacf(resid(seg.pine1))
-slope(seg.pine2)
-plot(seg.pine2)
-
-AIC(seg.pine1, seg.pine2, pine.glm)
-#Running with  grasses
-plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Grasses",]) #plot the data
-set.seed(123) #set for running the segmented model 
-grass.lm <- lm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)), data = doc[doc$Ctype == "Grasses",]) #the Linear model to use for breakpoint estimation
-plot(grass.lm);summary(grass.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
-
-seg.grass1 = segmented(grass.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
-summary(seg.grass1)
-slope(seg.grass1)
-
-seg.grass2 = segmented(grass.lm, seg.Z = ~Time, psi = c(2,15))
-plot(seg.grass2)
-plot(seg.grass1)
-points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Grasses",])
-pacf(resid(seg.grass1))
-AIC(grass.glm, seg.grass1, seg.grass2)
-##Running the leaves
-plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Leaves",]) #plot the data
-set.seed(123) #set for running the segmented model 
-leaves.lm <- lm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Leaves",]) #the Linear model to use for breakpoint estimation
-plot(leaves.lm);summary(leaves.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
-seg.leaves1 = segmented(leaves.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
-seg.leaves2 = segmented(leaves.glm, seg.Z = ~Time, psi = c(2,15))
-
-summary(seg.leaves1)
-
-plot(seg.leaves1)
-points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Leaves",])
-pacf(resid(seg.leaves1))
-AIC(leaves.glm, seg.leaves1, seg.leaves2)
-
-#### DOC k coeffs ####
-seg.pine1$coefficients[1]
-seg.grass1$coefficients[1]
-seg.leaves1$coefficients[1] 
-###### End [DOC] Breakpoint comparisons #####
-
-### Dissolved stoic figure for supplemental ####
-CV = function(x){sd(x, na.rm = T)/mean(x, na.rm = T)}
-NP_doc = doc[apply(doc[c('Time', 'NP')], 1, function(x) all(is.finite(x))),c('Time', 'Ctype','NP')]
-aggregate(NP~Ctype, data = doc, FUN = CV)
-
-NP.plot = ggplot(data = doc, aes(x = Time, y = NP, group = Ctype, colour = Ctype)) +
-  geom_path(size = 1.2) +geom_point(aes(shape = Ctype, fill = Ctype), size = 6, colour = "black") + 
-  ylab("DIN:SRP (molar)") + xlab("Time (days)") + scale_x_continuous(limits = c(0,44), expand = c(0.01,0)) +
-  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                     labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
-  scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
-  scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                       labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
-  theme(legend.position = c(0.85, 0.85), panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_text(size = 22), 
-        axis.title.x = element_text(size = 24), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));NP.plot
-
-tiff("NP_plot.tiff", res = 600, height = 8, width = 8, units = "in")
-NP.plot
-dev.off()
-N_doc = doc[apply(doc[c('Time', 'DOC.DIN')], 1, function(x) all(is.finite(x))), c('Time', 'Ctype', 'DOC.DIN')]
-aggregate(DOC.DIN~Ctype, data = doc, FUN = CV)
-
-DOC_N.plot = ggplot(doc, aes(x = Time, y = DOC.DIN, group = Ctype, colour = Ctype)) +
-  geom_point(aes(shape = Ctype, fill = Ctype), size = 6, colour = "black") + geom_path(size = 1.2) +
-  ylab("DOC:DIN (molar)") + xlab("Time (days)") +
-  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                     labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
-  scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
-  scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                       labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
-  theme(legend.position = c(0.9, 0.75), panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_blank(), 
-        axis.title.x = element_blank(), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));DOC_N.plot
-
-P_doc = doc[apply(doc[c('Time', 'DOC.SRP')], 1, function(x) all(is.finite(x))), c('Time', 'Ctype', 'DOC.SRP')]
-aggregate(DOC.SRP~Ctype, data = doc, FUN = CV)
-
-DOC_P.plot = ggplot(doc, aes(x = Time, y = DOC.SRP, group = Ctype, colour = Ctype)) +
-  geom_point(aes(shape = Ctype, fill = Ctype), size = 6, colour = "black") + geom_path(size = 1.2) +
-  ylab("DOC:SRP (molar)") + xlab("Time (days)") +
-  scale_shape_manual(name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                     labels = c("Grasses", "Leaves", "Pine"), values = c(21,24,22)) +
-  scale_fill_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                     labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
-  scale_colour_manual( name="Leachate type", breaks=c("Grasses", "Leaves", "Pine"),
-                       labels = c("Grasses", "Leaves", "Pine"), values = cbbPalette) +
-  theme(legend.position = 'none', panel.grid.minor = element_blank(), panel.grid.major = element_blank(), axis.text.y = element_text(size = 22), axis.text.x = element_blank(), 
-        axis.title.x = element_blank(), axis.title.y = element_text(size = 24, margin = margin(t = 0, r = 0, l = 0, b = 0)));DOC_P.plot
-
-tiff("Dissolved_stoic.tiff", res = 600, height = 15, width = 10, unit = "in")
-ggarrange(DOC_N.plot, DOC_P.plot, NP.plot, ncol = 1)
-dev.off()
-
-ggarrange(DOC_N.plot, DOC_P.plot, NP.plot, ncol = 1)
-grid.arrange(DOC_N.plot, DOC_P.plot, NP.plot, ncol = 1)
-
-###### End Stoic supplemental figure #####
-
-####### Exploratory analysis section #######
-
 ###### attempting to build a time step model of michaelis menten kinetics of DOC uptake #####
 # Hyperbolic model formula #
 # d[DOC]/dt = Vmax[DOC]/Km + [DOC] 
@@ -1203,7 +1241,6 @@ o2_resp %>%
   group_by(Ctype) %>%
   left_join(resp) %>%
   mutate(O_C = abs(O2_consump)/abs(CO2.accum)*(48/36)) -> resp_o2.df
-
 
 ggplot(resp_o2.df, aes(x = Days, y = O_C, color = Ctype)) + geom_point(size = 2) + geom_path(size = 1.2) +
   ylab("O2 consumption (uL)/CO2 accum. (uL)")+theme(legend.position = c(0.8,0.2))
