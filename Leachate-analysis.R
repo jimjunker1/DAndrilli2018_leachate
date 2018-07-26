@@ -274,7 +274,9 @@ plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Leaves",]) #plot the data
  #set for running the segmented model 
 leaves.lm <- glm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Leaves",]) #the Linear model to use for breakpoint estimation
 leaves_offset.lm <- glm(log(PerDOCrem ) ~ Time,offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Leaves",]);summary(leaves_offset.lm)
-summary(leaves.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
+HEAD
+plot(leaves.lm);summary(leaves.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
+755be2983a2adfe9092d06a83579b880f601a9e1
 set.seed(123);seg.leaves1 = segmented(leaves.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
 summary(seg.leaves1)
 
