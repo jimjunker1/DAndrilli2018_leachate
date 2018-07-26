@@ -225,11 +225,11 @@ cor.test(doc.change_gr2$X.labile, doc.change_gr2$Ub*1e06)
 
 ###### Compare breakpoint in [DOC] #####
 plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Pine",]) #plot the data
-set.seed(123) #set for running the segmented model 
-pine.lm <- lm(log(PerDOCrem ) ~  0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Pine",])
-#pine.lm <- lm(log(PerDOCrem ) ~ Time,data = doc[doc$Ctype == "Pine",]);summary(pine.lm)
+
+pine.lm <- glm(log(PerDOCrem ) ~  0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Pine",])
+pine_offset.lm <- glm(log(PerDOCrem ) ~ Time,offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Pine",]);summary(pine_offset.lm)
 plot(pine.lm);summary(pine.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
-seg.pine1 = segmented(pine.lm, seg.Z = ~Time, psi = 1)
+set.seed(123);seg.pine1 = segmented(pine.lm, seg.Z = ~Time, psi = 1)
 summary(seg.pine1)
 seg.pine1$psi[[2]]
 ######  Quick test to check sensitivity of breakpoint to starting value #####
@@ -255,12 +255,14 @@ ggplot(df, aes(x = start, y = est)) + geom_errorbar(aes(ymin = est - est.se, yma
 slope(seg.pine1)
 plot(seg.pine1)
 points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Pine",])
+AICcmodavg::AICc(pine.lm, seg.pine1)
 #Running with  grasses
 plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Grasses",]) #plot the data
-set.seed(123) #set for running the segmented model 
-grass.lm <- lm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)), data = doc[doc$Ctype == "Grasses",]) #the Linear model to use for breakpoint estimation
+ #set for running the segmented model 
+grass.lm <- glm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)), data = doc[doc$Ctype == "Grasses",]) #the Linear model to use for breakpoint estimation
+grass_offset.lm <- glm(log(PerDOCrem ) ~ Time,offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Grasses",]);summary(grass_offset.lm)
 plot(grass.lm);summary(grass.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
-seg.grass1 = segmented(grass.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
+set.seed(123);seg.grass1 = segmented(grass.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
 summary(seg.grass1)
 slope(seg.grass1)
 
@@ -269,16 +271,17 @@ points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Grasses",])
 AIC(grass.lm, seg.grass1)
 ##Running the leaves
 plot(log(PerDOCrem) ~ Time, data = doc[doc$Ctype == "Leaves",]) #plot the data
-set.seed(123) #set for running the segmented model 
-leaves.lm <- lm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Leaves",]) #the Linear model to use for breakpoint estimation
-plot(leaves.lm);summary(leaves.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
-seg.leaves1 = segmented(leaves.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
+ #set for running the segmented model 
+leaves.lm <- glm(log(PerDOCrem) ~ 0 + Time, offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Leaves",]) #the Linear model to use for breakpoint estimation
+leaves_offset.lm <- glm(log(PerDOCrem ) ~ Time,offset = rep(4.60517, length(Time)),data = doc[doc$Ctype == "Leaves",]);summary(leaves_offset.lm)
+summary(leaves.lm)  #plotting the linear model. Look @ standardized residuals and fitted values to estimate time of possible breakpoints
+set.seed(123);seg.leaves1 = segmented(leaves.lm, seg.Z = ~Time, psi = 10) #Piecewise with single breakpoint
 summary(seg.leaves1)
 
 plot(seg.leaves1)
 points(log(PerDOCrem)-4.60517 ~ Time, data = doc[doc$Ctype == "Leaves",])
 AIC(leaves.lm, seg.leaves1)
-
+slope(seg.leaves1)
 #### DOC psi est ####
 seg.pine1$psi[2]
 seg.grass1$psi[2]
